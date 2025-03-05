@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: black; }
+        video { width: 100vw; height: 100vh; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <video id="video" autoplay loop muted></video>
+    <script>
+        const video = document.getElementById("video");
+        const socket = new WebSocket("ws://localhost:8080");
+
+        socket.onmessage = (event) => {
+            console.log(event);
+            // const videoURL = JSON.parse(event.data); // Receive full path
+            const videoURL = event.data;
+            console.log(videoURL);
+            video.src = videoURL;
+            video.load();  // Ensure it reloads the new video
+            video.play();
+        };
+    </script>
+</body>
+</html>

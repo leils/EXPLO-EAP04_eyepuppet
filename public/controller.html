@@ -1,0 +1,22 @@
+// TODO: there's something wrong with the socket message
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Controller</title>
+</head>
+<body>
+    <h1>Select a Video</h1>
+    <button onclick="changeVideo('/videos/gaze.mp4')">Video 1</button>
+    <button onclick="changeVideo('/videos/happy-blink.mp4')">Video 2</button>
+    <button onclick="changeVideo('/videos/hug-mid.mp4')">Video 3</button>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080");
+        function changeVideo(videoPath) {
+            socket.send(videoPath.toString()); // Send the full relative URL 
+        }
+    </script>
+</body>
+</html>
