@@ -10,14 +10,21 @@
     </style>
 </head>
 <body>
+
     <video id="video" autoplay loop muted></video>
     <script>
         const video = document.getElementById("video");
         const socket = new WebSocket("ws://localhost:8080");
 
+        function changeVideo(videoPath) {
+            console.log(videoPath);
+            video.src = videoPath;
+            video.load();
+            video.play();
+        }
+
         socket.onmessage = (event) => {
             console.log(event);
-            // const videoURL = JSON.parse(event.data); // Receive full path
             const videoURL = event.data;
             console.log(videoURL);
             video.src = videoURL;

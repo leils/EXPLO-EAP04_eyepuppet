@@ -7,8 +7,8 @@ wss.on("connection", (ws) => {
     ws.send(currentVideo); // Send the correct file path
 
     ws.on("message", (message) => {
-        currentVideo = message;
-        console.log(message);
+        currentVideo = message.toString();
+        console.log(currentVideo);
         wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(currentVideo); // Send the full path

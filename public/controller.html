@@ -1,4 +1,3 @@
-// TODO: there's something wrong with the socket message
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,9 +7,14 @@
 </head>
 <body>
     <h1>Select a Video</h1>
-    <button onclick="changeVideo('/videos/gaze.mp4')">Video 1</button>
-    <button onclick="changeVideo('/videos/happy-blink.mp4')">Video 2</button>
-    <button onclick="changeVideo('/videos/hug-mid.mp4')">Video 3</button>
+    <button onclick="changeVideo('/videos/wake.mp4')">Wake</button>
+    <button onclick="changeVideo('/videos/blink2.mp4')">Blink 2</button>
+    <button onclick="changeVideo('/videos/happy-to-sleep.mp4')">Happy -> Sleep</button>
+    <button onclick="changeVideo('/videos/hug-begin.mp4')">Begin Hug</button>
+    <button onclick="changeVideo('/videos/hug-mid.mp4')">In-hug</button>
+    <button onclick="changeVideo('/videos/hug-end.mp4')">End Hug</button>
+    <button onclick="changeVideo('/videos/gaze.mp4')">Gaze Left-Right</button>
+    <button onclick="changeVideo('/videos/happy-blink.mp4')">Happy Blink</button>
 
     <script>
         const socket = new WebSocket("ws://localhost:8080");
