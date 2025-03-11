@@ -11,26 +11,49 @@
 </head>
 <body>
 
-    <video id="video" autoplay loop muted></video>
+    <video id="video" autoplay muted></video>
     <script>
         const video = document.getElementById("video");
         const socket = new WebSocket("ws://localhost:8080");
+        let videoQueue = [];
+        
 
-        function changeVideo(videoPath) {
+        function singleVideoLoop(videoPath) {
             console.log(videoPath);
+            video.loop = false;
             video.src = videoPath;
-            video.load();
+            // video.load();
             video.play();
         }
 
         socket.onmessage = (event) => {
             console.log(event);
-            const videoURL = event.data;
-            console.log(videoURL);
-            video.src = videoURL;
-            video.load();  // Ensure it reloads the new video
-            video.play();
+            const data = JSON.parse(event.data);
+            console.log("Received:", data);
+
+            if (data.type === "sequence" && Array.isArray(data.videos) && data.videos.length > 0) {
+                videoQueue = [...data.videos]; // Store all videos in queue
+                playNextVideo();
+            } else if (data.type === "solo") {
+                singleVideoLoop(data.path)
+            }
         };
+
+        function playNextVideo() {
+            if (videoQueue.length === 0) return;
+
+            const nextVideo = videoQueue.shift(); // Get the next video
+            video.src = nextVideo;
+            video.loop = (videoQueue.length === 0); // Loop only the last video
+            video.load();
+            video.play();
+
+            if (!video.loop) {
+                video.onended = playNextVideo; // Play next video when current one ends
+            } else {
+                video.onended = null; // Prevent further switching once looping
+            }
+        }
     </script>
 </body>
 </html>

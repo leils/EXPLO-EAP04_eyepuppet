@@ -16,10 +16,33 @@
     <button onclick="changeVideo('/videos/gaze.mp4')">Gaze Left-Right</button>
     <button onclick="changeVideo('/videos/happy-blink.mp4')">Happy Blink</button>
 
+    <br>
+
+    <button onclick="playVideoSequence(['/videos/hug-begin.mp4','/videos/hug-mid.mp4'])">StartHug Sequence</button>
+
     <script>
         const socket = new WebSocket("ws://localhost:8080");
         function changeVideo(videoPath) {
-            socket.send(videoPath.toString()); // Send the full relative URL 
+            const message = JSON.stringify({
+                type: "solo",
+                path: videoPath
+            })
+            console.log("Sending: ", message);
+            socket.send(message); // Send the full relative URL 
+        }
+
+        function playVideoSequence(videoList) {
+            if (!Array.isArray(videoList) || videoList.length === 0) {
+                console.error("Invalid video list.");
+                return;
+            }
+
+            const message = JSON.stringify({
+                type: "sequence",
+                videos: videoList
+            });
+            console.log("Sending:", message);
+            socket.send(message);
         }
     </script>
 </body>
