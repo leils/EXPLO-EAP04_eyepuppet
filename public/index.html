@@ -18,11 +18,10 @@
         let videoQueue = [];
         
 
-        function singleVideoLoop(videoPath) {
+        function singleVideo(videoPath) {
             console.log(videoPath);
-            video.loop = false;
             video.src = videoPath;
-            // video.load();
+            video.load();
             video.play();
         }
 
@@ -35,7 +34,11 @@
                 videoQueue = [...data.videos]; // Store all videos in queue
                 playNextVideo();
             } else if (data.type === "solo") {
-                singleVideoLoop(data.path)
+                video.loop = false;
+                singleVideo(data.path)
+            } else if (data.type === "loop") {
+                video.loop = true;
+                singleVideo(data.path)
             }
         };
 
