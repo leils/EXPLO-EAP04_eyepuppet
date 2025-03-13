@@ -18,28 +18,8 @@
     <button onclick="playVideoSequence(['happytosleep', 'sleepcycle'])">Sleep</button>
 
     <script>
-        // const socket = new WebSocket("ws://localhost:8080");
         const socket = io(); // Connect to WebSocket server
 
-        // function changeVideo(videoPath) {
-        //     const message = JSON.stringify({
-        //         type: "solo",
-        //         path: videoPath
-        //     })
-        //     console.log("Sending: ", message);
-        //     // socket.send(message); // Send the full relative URL 
-        //     socket.emit(message); // Send the full relative URL 
-        // }
-
-        // function loopVideo(videoPath) {
-        //     const message = JSON.stringify({
-        //         type: "loop",
-        //         path: videoPath
-        //     })
-        //     console.log("Sending: ", message);
-        //     // socket.send(message); // Send the full relative URL 
-        //     socket.emit(message); // Send the full relative URL 
-        // }
 
         function playVideoSequence(videoList) {
             if (!Array.isArray(videoList) || videoList.length === 0) {
