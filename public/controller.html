@@ -6,26 +6,15 @@
     <title>Video Controller</title>
 </head>
 <body>
-    <h1>Solo videos</h1>
-    <p>Don't loop, play video once</p>
-    <button onclick="changeVideo('/videos/wake.mp4')">Wake</button>
-    <button onclick="changeVideo('/videos/blink2.mp4')">Blink 2</button>
-    <button onclick="changeVideo('/videos/happy-to-sleep.mp4')">Happy -> Sleep</button>
-    <button onclick="changeVideo('/videos/hug-begin.mp4')">Begin Hug</button>
-    <button onclick="changeVideo('/videos/hug-mid.mp4')">In-hug</button>
-    <button onclick="changeVideo('/videos/hug-end.mp4')">End Hug</button>
-    <button onclick="changeVideo('/videos/gaze.mp4')">Gaze Left-Right</button>
-    <button onclick="changeVideo('/videos/happy-blink.mp4')">Happy Blink</button>
-
     <hr>
     <h1>Video Sequences</h1>
     <p>Sequences loop the last video</p>
 
-    <button onclick="playVideoSequence(['/videos/wake.mp4','/videos/wake-cycle.mp4'])">Wake -> Cycle</button>
-    <button onclick="playVideoSequence(['/videos/gaze.mp4','/videos/wake-cycle.mp4'])">Look Around -> Cycle</button>
-    <button onclick="playVideoSequence(['/videos/hug-begin.mp4','/videos/hug-mid.mp4'])">StartHug Sequence</button>
-    <button onclick="playVideoSequence(['/videos/hug-end.mp4','/videos/happy-cycle.mp4'])">EndHug Sequence</button>
-    <button onclick="playVideoSequence(['/videos/happy-to-sleep.mp4','/videos/sleep-cycle.mp4'])">Happy->Sleep Sequence</button>
+    <button onclick="playVideoSequence(['wake','wakecycle'])">Wake</button>
+    <button onclick="playVideoSequence(['gaze','wakecycle'])">Gaze</button>
+    <button onclick="playVideoSequence(['hugbegin','hugmid'])">Hug Begin</button>
+    <button onclick="playVideoSequence(['hugend','happycycle'])">Hug End</button>
+    <button onclick="playVideoSequence(['happytosleep', 'sleepcycle'])">Sleep</button>
 
     <script>
         const socket = new WebSocket("ws://localhost:8080");

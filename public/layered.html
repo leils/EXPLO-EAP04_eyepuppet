@@ -18,11 +18,8 @@
 
         .video-container {
             position: relative;
-            width: 80vw;
-            height: 45vw;
-            /* Aspect ratio 16:9 */
-            max-width: 800px;
-            max-height: 450px;
+            width: 100vw;
+            height: 56vw;
             background: black;
         }
 
@@ -55,11 +52,12 @@
     </div>
 
     <div class="controls">
-        <button onclick="showVideo(['wake','wakecycle'])">Wake to Wakecycle</button>
-        <button onclick="showVideo(['gaze','wakecycle'])">Gaze to Wakecycle</button>
+        <button id="initbutton" onclick="initclick()">Click me first</button>
     </div>
 
     <script>
+        const socket = new WebSocket("ws://localhost:8080");
+
         const videoPaths = {
             blink2: "/videos/blink2.mp4",
             gaze: "/videos/gaze.mp4",
@@ -98,11 +96,19 @@
         let videoKeyQueue = [];
         let currentIndex = 0;
 
-        function showVideo(videoKeyList) {
-            if (!Array.isArray(videoKeyList) || videoKeyList.length === 0) return;
+        socket.onmessage = (event) => {
+            console.log(event);
+            const data = JSON.parse(event.data);
+            console.log("Received:", data);
 
-            videoKeyQueue = videoKeyList;
-            currentIndex = 0;
+            if (data.type === "sequence" && Array.isArray(data.videos) && data.videos.length > 0) {
+                setUpAndPlayVideos(data.videos);//something wrong here
+            }
+        }
+
+        function setUpAndPlayVideos(videoKeyList) {
+            videoKeyQueue = videoKeyList; // Store all videos in queue
+            currentIndex=0;
             playCurrentVideo();
         }
 
@@ -135,8 +141,12 @@
             }
         }
 
-        // Default sequence: sleep
-        showVideo(['sleepcycle']);
+        function initclick() {
+            const button = document.getElementById("initbutton"); 
+            button.remove();
+
+            setUpAndPlayVideos(['sleepcycle']);
+        }
     </script>
 
 </body>
