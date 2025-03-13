@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/socket.io/socket.io.js"></script>
     <title>Video Controller</title>
 </head>
 <body>
@@ -17,24 +18,28 @@
     <button onclick="playVideoSequence(['happytosleep', 'sleepcycle'])">Sleep</button>
 
     <script>
-        const socket = new WebSocket("ws://localhost:8080");
-        function changeVideo(videoPath) {
-            const message = JSON.stringify({
-                type: "solo",
-                path: videoPath
-            })
-            console.log("Sending: ", message);
-            socket.send(message); // Send the full relative URL 
-        }
+        // const socket = new WebSocket("ws://localhost:8080");
+        const socket = io(); // Connect to WebSocket server
 
-        function loopVideo(videoPath) {
-            const message = JSON.stringify({
-                type: "loop",
-                path: videoPath
-            })
-            console.log("Sending: ", message);
-            socket.send(message); // Send the full relative URL 
-        }
+        // function changeVideo(videoPath) {
+        //     const message = JSON.stringify({
+        //         type: "solo",
+        //         path: videoPath
+        //     })
+        //     console.log("Sending: ", message);
+        //     // socket.send(message); // Send the full relative URL 
+        //     socket.emit(message); // Send the full relative URL 
+        // }
+
+        // function loopVideo(videoPath) {
+        //     const message = JSON.stringify({
+        //         type: "loop",
+        //         path: videoPath
+        //     })
+        //     console.log("Sending: ", message);
+        //     // socket.send(message); // Send the full relative URL 
+        //     socket.emit(message); // Send the full relative URL 
+        // }
 
         function playVideoSequence(videoList) {
             if (!Array.isArray(videoList) || videoList.length === 0) {
@@ -47,7 +52,8 @@
                 videos: videoList
             });
             console.log("Sending:", message);
-            socket.send(message);
+            // socket.send(message);
+            socket.emit("playSequence", message);
         }
     </script>
 </body>

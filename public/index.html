@@ -1,62 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Sequential Video Playback</title>
     <style>
-        body { margin: 0; overflow: hidden; background: black; }
-        video { width: 100vw; height: 100vh; object-fit: cover; }
-    </style>
-</head>
-<body>
-
-    <video id="video" autoplay muted></video>
-    <script>
-        const video = document.getElementById("video");
-        const socket = new WebSocket("ws://localhost:8080");
-        let videoQueue = [];
-        
-
-        function singleVideo(videoPath) {
-            console.log(videoPath);
-            video.src = videoPath;
-            video.load();
-            video.play();
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: black;
         }
 
-        socket.onmessage = (event) => {
-            console.log(event);
-            const data = JSON.parse(event.data);
+        .video-container {
+            position: relative;
+            width: 100vw;
+            height: 56vw;
+            background: black;
+        }
+
+        video {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            /* Initially hidden */
+            transition: opacity 0.01s ease-in-out;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    
+</head>
+
+<body>
+
+    <div class="video-container" id="video-container">
+    </div>
+
+    <div class="controls">
+        <button id="initbutton" onclick="initclick()">Click me first</button>
+    </div>
+
+    <script>
+        // const socket = new WebSocket("ws://localhost:8080");
+        const socket = io(); // Connect to WebSocket server
+
+        const videoPaths = {
+            blink2: "/videos/blink2.mp4",
+            gaze: "/videos/gaze.mp4",
+            happyblink: "/videos/happy-blink.mp4",
+            happycycle: "/videos/happy-cycle.mp4",
+            happytosleep: "/videos/happy-to-sleep.mp4",
+            hugbegin: "/videos/hug-begin.mp4",
+            hugend: "/videos/hug-end.mp4",
+            hugmid: "/videos/hug-mid.mp4",
+            sleepcycle: "/videos/sleep-cycle.mp4",
+            wakecycle: "/videos/wake-cycle.mp4",
+            wake: "/videos/wake.mp4",
+        };
+
+        const videos = {}; // Dictionary to store video elements
+        const container = document.getElementById("video-container"); // Assuming there's a container in HTML
+
+        for (const [key, path] of Object.entries(videoPaths)) {
+            const videoElement = document.createElement("video");
+            videoElement.src = path;
+            videoElement.id = key;
+            videoElement.setAttribute("preload", "auto");
+            videoElement.setAttribute("playsinline", "");
+            videoElement.style.opacity = 0; // Initially hidden
+            videoElement.style.position = "absolute"; // Ensures layering if overlaid
+            videoElement.style.width = "100%";
+            videoElement.style.height = "100%";
+            videoElement.style.objectFit = "cover";
+            videoElement.pause();
+
+            videos[key] = videoElement; // Store the video element in the dictionary
+            container.appendChild(videoElement); // Append to the page
+        }
+
+        let currentVideoKey = null;
+        let videoKeyQueue = [];
+        let currentIndex = 0;
+
+        socket.on("playSequence", (message) => {
+            console.log(message);
+            const data = JSON.parse(message);
             console.log("Received:", data);
 
             if (data.type === "sequence" && Array.isArray(data.videos) && data.videos.length > 0) {
-                videoQueue = [...data.videos]; // Store all videos in queue
-                playNextVideo();
-            } else if (data.type === "solo") {
-                video.loop = false;
-                singleVideo(data.path)
-            } else if (data.type === "loop") {
-                video.loop = true;
-                singleVideo(data.path)
+                setUpAndPlayVideos(data.videos);//something wrong here
             }
-        };
+        });
 
-        function playNextVideo() {
-            if (videoQueue.length === 0) return;
+        function setUpAndPlayVideos(videoKeyList) {
+            videoKeyQueue = videoKeyList; // Store all videos in queue
+            currentIndex=0;
+            playCurrentVideo();
+        }
 
-            const nextVideo = videoQueue.shift(); // Get the next video
-            video.src = nextVideo;
-            video.loop = (videoQueue.length === 0); // Loop only the last video
-            video.load();
-            video.play();
+        function playCurrentVideo() {
+            if (currentVideoKey) {
+                videos[currentVideoKey].pause();
+                videos[currentVideoKey].style.opacity = 0;
+            }
 
-            if (!video.loop) {
-                video.onended = playNextVideo; // Play next video when current one ends
+            if (currentIndex >= videoKeyQueue.length) return;
+
+            const videoKey = videoKeyQueue[currentIndex];
+            currentVideoKey = videoKey;
+            currentVideo = videos[videoKey];
+            currentVideo.style.opacity = 1;
+            currentVideo.currentTime = 0;
+            currentVideo.play();
+
+            if (currentIndex === videoKeyQueue.length - 1) {
+                // Last video should loop
+                currentVideo.loop = true;
+                currentVideo.onended = null;
             } else {
-                video.onended = null; // Prevent further switching once looping
+                // Move to the next video when finished
+                currentVideo.loop = false;
+                currentVideo.onended = () => {
+                    currentIndex++;
+                    playCurrentVideo();
+                };
             }
         }
+
+        function initclick() {
+            const button = document.getElementById("initbutton"); 
+            button.remove();
+
+            setUpAndPlayVideos(['sleepcycle']);
+        }
     </script>
+
 </body>
+
 </html>
